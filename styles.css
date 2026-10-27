@@ -104,3 +104,14 @@ body{font-size:16px}
 .org-copy small{font-size:12px;line-height:1.2}
 .org-avatar{flex:none}
 .chevrons{flex:none}
+
+body:not(.authenticated) .app-shell{display:none}
+.auth-screen{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 75% 10%,rgba(196,97,28,.17),transparent 42%),linear-gradient(145deg,#101416,#171c1f 65%,#101416);color:var(--ink)}
+.auth-screen[hidden]{display:none}
+.auth-card{width:min(100%,430px);padding:30px;border:1px solid rgba(255,255,255,.13);border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));box-shadow:0 22px 70px rgba(0,0,0,.38);backdrop-filter:blur(16px)}
+.auth-card form[hidden]{display:none}
+.auth-brand{padding:0;margin-bottom:32px;width:max-content}
+.auth-heading{margin-bottom:20px}.auth-heading h1{margin:7px 0 4px;font-size:27px;font-weight:650}.auth-heading p,.auth-setup-note{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.auth-card form{display:grid;gap:14px}.auth-card .field{margin:0}.auth-submit{width:100%;margin-top:3px}.auth-error{padding:10px 12px;border:1px solid rgba(255,126,113,.3);border-radius:7px;background:rgba(255,126,113,.1);color:#ffaaa0;font-size:14px}.auth-footnote{display:block;margin-top:18px;color:var(--muted);font-size:12px;text-align:center;line-height:1.4}
+.session-controls{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-top:14px}.session-controls p{margin:0;color:var(--muted);font-size:14px}
+@media(max-width:520px){.auth-screen{padding:16px}.auth-card{padding:23px 19px;border-radius:13px}.auth-brand{margin-bottom:27px}.session-controls{align-items:flex-start;flex-direction:column}}
