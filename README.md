@@ -12,6 +12,10 @@ python -m http.server 8765
 
 Luego abre <http://localhost:8765>.
 
+## Continuar en otra computadora
+
+Consulta la [guía paso a paso para Windows](docs/continuar-en-otro-pc.md) para clonar el repositorio, abrir la aplicación y guardar cambios en GitHub.
+
 ## Notas
 
 - El tiempo actual de Bella Unión se consulta en Open-Meteo y requiere conexión a internet.
