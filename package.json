@@ -1,6 +1,6 @@
 {
   "name": "nexo-stock-desktop",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "private": true,
   "description": "Aplicación local de control de stock y repuestos",
   "main": "desktop/main.cjs",
