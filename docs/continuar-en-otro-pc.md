@@ -15,10 +15,10 @@ Esta guía explica cómo obtener el proyecto desde GitHub, ejecutarlo en Windows
 6. En PowerShell ejecuta:
 
    ```powershell
-   python -m http.server 8765
+   python server.py
    ```
 
-7. Abre <http://localhost:8765> en el navegador. Deja abierta la ventana de PowerShell mientras uses la aplicación. Para detener el servidor, vuelve a esa ventana y pulsa **Ctrl+C**.
+7. Abre <http://localhost:8765> en el navegador. Deja abierta la ventana de PowerShell mientras uses la aplicación. Para detener el servidor, vuelve a esa ventana y pulsa **Ctrl+C**. Cada computadora mantiene su propio archivo SQLite en `data/control_stock.sqlite3`.
 
 ## Traer cambios hechos desde otro PC
 
@@ -40,10 +40,10 @@ Si ya tienes Git instalado, puedes clonar y ejecutar el proyecto así:
 ```powershell
 git clone https://github.com/jorgemoraes28-ops/Control_de_stock.git
 cd Control_de_stock
-python -m http.server 8765
+python server.py
 ```
 
-Abre <http://localhost:8765>. Para actualizar el código antes de trabajar, usa `git pull`. Después de editarlo, guarda los cambios con:
+Abre <http://localhost:8765>. La base de datos local no se sube con Git y no se comparte al clonar. Para actualizar el código antes de trabajar, usa `git pull`. Después de editarlo, guarda los cambios con:
 
 ```powershell
 git add .
@@ -53,4 +53,4 @@ git push
 
 ## Importante sobre los datos
 
-GitHub guarda los archivos del programa. Los repuestos, movimientos y demás datos que la aplicación guarda en `localStorage` permanecen en el navegador y en ese PC; no se copian al clonar el repositorio. Si necesitas compartir los mismos datos operativos entre varios equipos, el sistema tendrá que conectarse a una base de datos compartida.
+GitHub guarda los archivos del programa, no los datos operativos. Repuestos, movimientos, proveedores y demás información ahora se guarda en SQLite en `data/control_stock.sqlite3`; ese archivo permanece en la computadora y no se copia al clonar el repositorio. Para trabajar en otra computadora con los mismos datos, más adelante habrá que alojar una base de datos compartida.

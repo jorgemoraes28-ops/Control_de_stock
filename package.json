@@ -1,0 +1,67 @@
+{
+  "name": "nexo-stock-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aplicación local de control de stock y repuestos",
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "start": "node node_modules/electron/install.js && electron .",
+    "build:backend": "python -m PyInstaller --clean --noconfirm --onefile --noconsole --name nexo-stock-server --distpath build/backend --workpath build/pyinstaller --specpath build server.py",
+    "dist:windows": "npm run build:backend && node node_modules/electron/install.js && electron-builder --win portable",
+    "dist:windows:folder": "npm run build:backend && node node_modules/electron/install.js && electron-builder --win dir"
+  },
+  "build": {
+    "appId": "uy.elnorteno.nexostock",
+    "productName": "Nexo Stock",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "package.json",
+      "desktop/main.cjs"
+    ],
+    "extraResources": [
+      {
+        "from": "index.html",
+        "to": "app-files/index.html"
+      },
+      {
+        "from": "app.js",
+        "to": "app-files/app.js"
+      },
+      {
+        "from": "styles.css",
+        "to": "app-files/styles.css"
+      },
+      {
+        "from": "assets",
+        "to": "app-files/assets"
+      },
+      {
+        "from": "database",
+        "to": "app-files/database"
+      },
+      {
+        "from": "build/backend/nexo-stock-server.exe",
+        "to": "backend/nexo-stock-server.exe"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "artifactName": "NexoStock-${version}-Windows-${arch}.${ext}"
+  },
+  "devDependencies": {
+    "electron": "45.1.0",
+    "electron-builder": "26.18.0"
+  }
+}

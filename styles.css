@@ -216,3 +216,4 @@ body:not(.authenticated) .app-shell{display:none}
 .email-simulation-notice,.email-simulation-result{display:flex;flex-direction:column;gap:3px;margin-bottom:14px;padding:11px 12px;border:1px solid rgba(239,145,71,.3);border-radius:7px;background:rgba(239,145,71,.09);color:var(--ink);font-size:10px}
 .email-simulation-notice span{color:var(--muted)}
 .email-simulation-result{margin:12px 0 0;color:#ffc084}
+.synced em.database-error{background:#f17d72;box-shadow:0 0 8px rgba(241,125,114,.45)}
