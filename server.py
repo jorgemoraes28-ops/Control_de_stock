@@ -4,11 +4,15 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sqlite3
+import time
 from contextlib import closing
+from datetime import datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import unquote, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
+from urllib.request import Request, urlopen
 
 ROOT = Path(os.environ.get("NEXO_STOCK_APP_DIR") or Path(__file__).resolve().parent).resolve()
 DATA_DIR = Path(os.environ.get("NEXO_STOCK_DATA_DIR") or ROOT / "data").resolve()
@@ -16,6 +20,88 @@ DB_PATH = DATA_DIR / "control_stock.sqlite3"
 SCHEMA_PATH = ROOT / "database" / "schema.sql"
 HOST = "127.0.0.1"
 PORT = int(os.environ.get("NEXO_STOCK_PORT", "8765"))
+BROU_QUOTES_URL = "https://www.brou.com.uy/web/guest/cotizaciones"
+BROU_QUOTES_TTL_SECONDS = 60
+_brou_quotes_cache = None
+_brou_quotes_cached_at = 0.0
+
+
+def parse_brou_quotes(html: str) -> dict:
+    """Extract the official BROU and eBROU USD buy/sell quotes from its page."""
+    quotes = {}
+    rows = re.findall(r"<tr\b[^>]*>(.*?)</tr>", html, flags=re.IGNORECASE | re.DOTALL)
+    for row in rows:
+        currency_match = re.search(
+            r"<p\b[^>]*class=[\"'][^\"']*\bmoneda\b[^\"']*[\"'][^>]*>(.*?)</p>",
+            row,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        if not currency_match:
+            continue
+        currency_name = re.sub(r"<[^>]+>", "", currency_match.group(1)).strip().casefold()
+        if currency_name == "dólar":
+            code = "USD"
+        elif currency_name == "dólar ebrou":
+            code = "USD_EBROU"
+        else:
+            continue
+        values = re.findall(
+            r"<p\b[^>]*class=[\"'][^\"']*\bvalor\b[^\"']*[\"'][^>]*>(.*?)</p>",
+            row,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        numbers = []
+        for value in values:
+            text = re.sub(r"<[^>]+>", "", value).strip()
+            if not text or text == "-":
+                continue
+            normalized = text.replace(".", "").replace(",", ".")
+            try:
+                numbers.append(float(normalized))
+            except ValueError:
+                continue
+        if len(numbers) >= 2:
+            quotes[code] = {"buy": numbers[0], "sell": numbers[1]}
+    if not {"USD", "USD_EBROU"}.issubset(quotes):
+        raise ValueError("El BROU no devolvió ambas cotizaciones del dólar")
+    return quotes
+
+
+def get_brou_quotes(force: bool = False) -> dict:
+    """Return cached live BROU quotes, falling back to the last snapshot if offline."""
+    global _brou_quotes_cache, _brou_quotes_cached_at
+    now = time.monotonic()
+    if (
+        not force
+        and _brou_quotes_cache
+        and now - _brou_quotes_cached_at < BROU_QUOTES_TTL_SECONDS
+    ):
+        return {**_brou_quotes_cache, "stale": False}
+    request = Request(
+        BROU_QUOTES_URL,
+        headers={"User-Agent": "NexoStock/1.0 (local inventory app)", "Accept": "text/html"},
+    )
+    try:
+        with urlopen(request, timeout=8) as response:
+            html = response.read().decode("utf-8", errors="replace")
+        payload = {
+            "source": "Banco República (BROU)",
+            "sourceUrl": BROU_QUOTES_URL,
+            "rates": parse_brou_quotes(html),
+            "fetchedAt": datetime.now(timezone.utc).isoformat(),
+            "stale": False,
+        }
+        _brou_quotes_cache = payload
+        _brou_quotes_cached_at = time.monotonic()
+        return payload
+    except Exception as exc:
+        if _brou_quotes_cache:
+            return {
+                **_brou_quotes_cache,
+                "stale": True,
+                "warning": "No se pudo actualizar la cotización publicada por BROU.",
+            }
+        raise ValueError("No se pudo consultar la cotización actual del BROU") from exc
 
 COLLECTIONS = {
     "nexo-stock-products": "products",
@@ -321,7 +407,8 @@ class Handler(SimpleHTTPRequestHandler):
         return not origin or origin in (f"http://localhost:{PORT}", f"http://127.0.0.1:{PORT}")
 
     def do_GET(self) -> None:
-        path = urlparse(self.path).path
+        parsed_url = urlparse(self.path)
+        path = parsed_url.path
         if path == "/api/health":
             with closing(connect()) as db:
                 self.send_json(200, {"ok": True, "database": "SQLite", "initialized": bool(db.execute("SELECT value FROM app_meta WHERE key='initialized'").fetchone())})
@@ -329,6 +416,13 @@ class Handler(SimpleHTTPRequestHandler):
         if path == "/api/bootstrap":
             with closing(connect()) as db:
                 self.send_json(200, get_bootstrap(db))
+            return
+        if path == "/api/exchange-rates/brou":
+            try:
+                force = parse_qs(parsed_url.query).get("refresh", ["0"])[0] == "1"
+                self.send_json(200, get_brou_quotes(force=force))
+            except ValueError as exc:
+                self.send_json(503, {"error": str(exc)})
             return
         super().do_GET()
 

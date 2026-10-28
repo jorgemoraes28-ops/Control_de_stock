@@ -38,7 +38,7 @@ Consulta la [guía paso a paso para Windows](docs/continuar-en-otro-pc.md) para 
 - Los datos operativos se guardan en SQLite en `data/control_stock.sqlite3`. Esta carpeta se excluye de Git para que los datos privados no se suban al repositorio.
 - En la primera ejecución, el servidor importa los datos existentes desde el almacenamiento del navegador abierto en el mismo perfil. El archivo SQLite pasa a ser la fuente de datos para posteriores aperturas de la app.
 - La base es local a esta computadora y el servidor solo escucha en `127.0.0.1`. No se comparte con otros dispositivos ni debe exponerse en una red.
-- El acceso inicial es **usuario `admin` / contraseña `admin123`**. Luego, un administrador puede crear cuentas con nombre de usuario y contraseña desde **Configuración → Usuarios y roles**. Cierra la sesión desde **Configuración → Sesión actual**.
+- El acceso inicial es **usuario `admin` / contraseña `admin123`**. Luego, un administrador puede crear cuentas con nombre de usuario y contraseña desde **Configuración → Usuarios y roles**. La sesión queda guardada en este navegador hasta que se cierre desde **Configuración → Sesión actual**.
 - El servidor local añade persistencia SQLite, pero el inicio de sesión y los permisos siguen aplicándose en la interfaz del navegador. Para usarla en una red o con información sensible todavía hace falta trasladar autenticación y permisos al backend.
 - Para respaldar los datos, cierra el servidor y copia `data/control_stock.sqlite3` a un lugar seguro. No subas la base a GitHub.
 - Las bibliotecas JavaScript de exportación están incluidas en `assets/vendor/`.

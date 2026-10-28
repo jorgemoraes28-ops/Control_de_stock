@@ -217,3 +217,10 @@ body:not(.authenticated) .app-shell{display:none}
 .email-simulation-notice span{color:var(--muted)}
 .email-simulation-result{margin:12px 0 0;color:#ffc084}
 .synced em.database-error{background:#f17d72;box-shadow:0 0 8px rgba(241,125,114,.45)}
+
+.cost-input-wrap{display:grid;grid-template-columns:minmax(0,1fr) 88px;gap:7px}.cost-input-wrap input,.cost-input-wrap select{min-width:0}
+
+.report-table{min-width:2350px}.audit-report-table{min-width:760px}.report-audit .dashboard-panel-head{padding:12px 14px}
+
+#report-inbound-value,#report-outbound-value{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.report-table td{vertical-align:top}.report-audit{margin-top:14px}
+.brou-quote-panel{border:1px solid var(--line,#343a3d);border-radius:12px;padding:14px 16px;margin:4px 0 18px;background:linear-gradient(135deg,rgba(255,132,47,.08),rgba(255,255,255,.025));display:grid;gap:12px}.brou-quote-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.brou-quote-heading>div,.brou-quote-grid>div{display:grid;gap:4px}.brou-quote-heading small,.brou-quote-panel>small{color:var(--muted,#9ca3a6);font-size:12px}.brou-quote-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.brou-quote-grid>div{padding:10px;border-radius:8px;background:rgba(0,0,0,.12)}.brou-quote-grid span{display:flex;justify-content:space-between;font-size:13px}.brou-quote-grid strong{font-variant-numeric:tabular-nums}.brou-quote-panel>a{font-size:12px;color:var(--accent,#ff8a3d);width:max-content}.brou-quote-panel+.field,.cost-input-wrap+small{margin-top:4px}
